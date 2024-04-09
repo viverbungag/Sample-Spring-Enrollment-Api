@@ -65,7 +65,7 @@ public class StudentServiceImpl implements StudentService{
 
     @Transactional
     public void delete(int studentNumber) {
-        Student student = studentRepository.findByNumber(studentNumber);
+        studentRepository.findByNumber(studentNumber);
         studentRepository.delete(studentNumber);
     };
 }

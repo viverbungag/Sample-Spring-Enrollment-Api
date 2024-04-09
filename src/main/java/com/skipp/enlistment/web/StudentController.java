@@ -25,17 +25,18 @@ import java.util.Map;
 public class StudentController {
 
     private final StudentService studentServiceImpl;
-    private final AppUserDao appUserRepository;
+    private final Verification verification;
 
     // TODO What bean should be wired here?
     @Autowired
-    public StudentController(StudentService studentServiceImpl, AppUserDao appUserRepository) {
+    public StudentController(StudentService studentServiceImpl, Verification verification) {
         this.studentServiceImpl = studentServiceImpl;
-        this.appUserRepository = appUserRepository;
+        this.verification = verification;
     }
 
     // TODO What @XXXMapping annotation should be put here?
     @GetMapping
+    @ResponseStatus(HttpStatus.OK)
     public Collection<Student> getStudents() {
         // TODO implement this handler
         return studentServiceImpl.findAllStudents();
@@ -44,11 +45,12 @@ public class StudentController {
     // TODO What @XXXMapping annotation should be put here?
     // Hint: The method argument should give you an idea how it would look like.
     @GetMapping("/{studentNumber}")
-    public ResponseEntity<StudentDto> getStudent(@PathVariable Integer studentNumber, Authentication auth) {
+    @ResponseStatus(HttpStatus.OK)
+    public StudentDto getStudent(@PathVariable Integer studentNumber, Authentication auth) {
         // TODO implement this handler
         // Hint: 'auth' is where you can get the username of the user accessing the API
         Student student;
-        if (isRoleNotFaculty(auth)) {
+        if (verification.isRoleNotFaculty(auth)) {
             throw new AccessDeniedException("Access Denied");
         }
 
@@ -59,7 +61,7 @@ public class StudentController {
         }
 
         StudentDto studentDto = new StudentDto(student, true);
-        return ResponseEntity.ok(studentDto);
+        return studentDto;
     }
 
     // TODO What @XXXMapping annotation should be put here?
@@ -68,10 +70,11 @@ public class StudentController {
     // Hint: What does the test expect?
     // TODO This should only be accessed by faculty. Apply the appropriate annotation.
     @PostMapping
-    public ResponseEntity<Object> createStudent(@RequestBody Student student, Authentication auth, UriComponentsBuilder uriBuilder) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public Student createStudent(@RequestBody Student student, Authentication auth, UriComponentsBuilder uriBuilder) {
         // TODO implement this handler
         Student newStudent;
-        if (isRoleNotFaculty(auth)) {
+        if (verification.isRoleNotFaculty(auth)) {
             throw new AccessDeniedException("Access Denied");
         }
 
@@ -89,16 +92,17 @@ public class StudentController {
             throw new IllegalArgumentException("lastName should not be blank");
         }
 
-        return new ResponseEntity<>(newStudent, HttpStatus.CREATED);
+        return newStudent;
     }
 
     // TODO What @XXXMapping annotation should be put here?
     // TODO This should only be accessed by faculty. Apply appropriate annotation.
     @PutMapping
-    public ResponseEntity<Object> updateStudent(@RequestBody Student student, Authentication auth) {
+    @ResponseStatus(HttpStatus.OK)
+    public Student updateStudent(@RequestBody Student student, Authentication auth) {
         // TODO implement this handler
         Student updatedStudent;
-        if (isRoleNotFaculty(auth)) {
+        if (verification.isRoleNotFaculty(auth)) {
             throw new AccessDeniedException("Access Denied");
         }
 
@@ -116,16 +120,17 @@ public class StudentController {
             throw new IllegalArgumentException("lastName should not be blank");
         }
 
-        return new ResponseEntity<>(updatedStudent, HttpStatus.OK);
+        return updatedStudent;
     }
 
     // TODO What @XXXMapping annotation should be put here?
     // Hint: The method argument should give you an idea how it would look like.
     // TODO This should only be accessed by faculty. Apply appropriate annotation.
     @DeleteMapping("/{studentNumber}")
-    public ResponseEntity deleteStudent(@PathVariable Integer studentNumber, Authentication auth) {
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteStudent(@PathVariable Integer studentNumber, Authentication auth) {
         // TODO implement this handler
-        if (isRoleNotFaculty(auth)) {
+        if (verification.isRoleNotFaculty(auth)) {
             throw new AccessDeniedException("Access Denied");
         }
 
@@ -141,15 +146,5 @@ public class StudentController {
                 throw new ReferentialIntegrityViolationException("Student " + studentNumber + " is still enrolled in a section.");
             }
         }
-        return ResponseEntity.ok().build();
     }
-
-    private boolean isRoleNotFaculty(Authentication auth){
-        AppUser appUser = appUserRepository.findByUsername(auth.getName());
-        if (!appUser.getRole().equals("FACULTY")) {
-            return true;
-        }
-        return false;
-    }
-
 }

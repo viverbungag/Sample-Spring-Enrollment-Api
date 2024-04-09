@@ -3,6 +3,7 @@ package com.skipp.enlistment.it;
 import com.skipp.enlistment.domain.Room;
 import com.skipp.enlistment.dto.ErrorResponse;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
