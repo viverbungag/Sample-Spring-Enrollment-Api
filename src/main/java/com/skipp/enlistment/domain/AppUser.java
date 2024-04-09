@@ -20,6 +20,12 @@ public class AppUser {
      */
     private String role;
 
+    public AppUser(String username, String passwordHash, String role) {
+        this.username = username;
+        this.passwordHash = passwordHash;
+        this.role = role;
+    }
+
     public String getUsername() {
         return username;
     }
@@ -42,7 +48,14 @@ public class AppUser {
 
     public void setRole(String role) {
         this.role = role;
-
     }
 
+    @Override
+    public String toString() {
+        return "AppUser{" +
+                "username='" + username + '\'' +
+                ", passwordHash='" + passwordHash + '\'' +
+                ", role='" + role + '\'' +
+                '}';
+    }
 }
