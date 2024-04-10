@@ -48,6 +48,7 @@ public class RestControllerExceptionHandler {
     // TODO What's the annotation to use to define the status code returned when a handler is successful?
     // TODO What's the appropriate status code for this handler?
     // Hint: What do the tests expect?
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     public ErrorResponse handleSectionCreationException(SectionCreationException e) {
         return new ErrorResponse(e.getMessage());
     }

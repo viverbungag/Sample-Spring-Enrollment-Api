@@ -24,27 +24,36 @@ public class JdbcFacultyRepository implements FacultyDao {
 
     @Override
     public Collection<Faculty> findAllFaculty() {
-        return null;
+        String sql = "SELECT * FROM faculty";
+        Collection<Faculty> faculty = jdbcTemplate.query(sql, new FacultyMapper());
+        return faculty;
     }
 
     @Override
     public Faculty findByNumber(int facultyNumber) {
-        return null;
+        String sql = "SELECT * FROM faculty WHERE faculty_number = ?";
+        Faculty faculty = jdbcTemplate.queryForObject(sql, new FacultyMapper(), facultyNumber);
+        return faculty;
     }
 
     @Override
     public Faculty create(Faculty faculty) {
-        return null;
+        String sql = "INSERT INTO faculty (faculty_number, first_name, last_name) VALUES (?, ?, ?)";
+        jdbcTemplate.update(sql, faculty.getFacultyNumber(), faculty.getFirstName(), faculty.getLastName());
+        return new Faculty(faculty.getFacultyNumber(), faculty.getFirstName(), faculty.getLastName());
     }
 
     @Override
     public Faculty update(Faculty faculty) {
-        return null;
+        String sql = "UPDATE faculty SET first_name = ?, last_name = ? WHERE faculty_number = ?";
+        jdbcTemplate.update(sql, faculty.getFirstName(), faculty.getLastName(), faculty.getFacultyNumber());
+        return new Faculty(faculty.getFacultyNumber(), faculty.getFirstName(), faculty.getLastName());
     }
 
     @Override
     public void delete(int facultyNumber) {
-
+        String sql = "DELETE FROM faculty WHERE faculty_number = ?";
+        jdbcTemplate.update(sql, facultyNumber);
     }
 }
 

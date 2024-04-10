@@ -54,14 +54,6 @@ public class RoomController {
             throw new AccessDeniedException("Access Denied");
         }
 
-        if(room.getName().isBlank()){
-            throw new IllegalArgumentException("name should not be blank");
-        }
-
-        if (room.getCapacity() < 0){
-            throw new IllegalArgumentException("capacity must be non-negative, was " + room.getCapacity());
-        }
-
         try{
             newRoom = roomServiceImpl.create(room);
         } catch (DuplicateKeyException e) {
@@ -86,10 +78,6 @@ public class RoomController {
             updatedRoom = roomServiceImpl.update(room);
         } catch (EmptyResultDataAccessException e) {
             throw new RecordNotFoundException(String.format("Room Name: %s not found", room.getName()));
-        }
-
-        if (room.getCapacity() < 0){
-            throw new IllegalArgumentException("capacity must be non-negative, was " + room.getCapacity());
         }
 
         return updatedRoom;

@@ -7,6 +7,7 @@ import com.skipp.enlistment.dao.StudentDao;
 import com.skipp.enlistment.domain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,13 +21,15 @@ public class StudentServiceImpl implements StudentService{
     private final EnlistmentDao enlistmentRepository;
     private final SectionDao sectionRepository;
     private final AppUserDao appUserRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public StudentServiceImpl(StudentDao studentRepository, EnlistmentDao enlistmentRepository, SectionDao sectionRepository, AppUserDao appUserRepository) {
+    public StudentServiceImpl(StudentDao studentRepository, EnlistmentDao enlistmentRepository, SectionDao sectionRepository, AppUserDao appUserRepository, PasswordEncoder passwordEncoder) {
         this.studentRepository = studentRepository;
         this.enlistmentRepository = enlistmentRepository;
         this.sectionRepository = sectionRepository;
         this.appUserRepository = appUserRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -50,15 +53,40 @@ public class StudentServiceImpl implements StudentService{
     public Student create(Student student) {
         Student newStudent = studentRepository.create(student);
 
-        AppUser appUser = new AppUser(String.format("ST-%s", student.getStudentNumber()), "", "STUDENT");
+        if (student.getStudentNumber() < 0) {
+            throw new IllegalArgumentException("studentNumber must be non-negative, was " + student.getStudentNumber());
+        }
+
+
+        if(student.getFirstName().isBlank()){
+            throw new IllegalArgumentException("firstName should not be blank");
+        }
+
+        if(student.getLastName().isBlank()){
+            throw new IllegalArgumentException("lastName should not be blank");
+        }
+
+        String password = passwordEncoder.encode(student.getFirstName().replace(" ", "") + student.getLastName().replace(" ", ""));
+        AppUser appUser = new AppUser(String.format("ST-%s", student.getStudentNumber()), password, "STUDENT");
         appUserRepository.create(appUser);
         return newStudent;
     };
 
     @Transactional
     public Student update(Student student) {
+
+        if(student.getFirstName().isBlank()){
+            throw new IllegalArgumentException("firstName should not be blank");
+        }
+
+        if(student.getLastName().isBlank()){
+            throw new IllegalArgumentException("lastName should not be blank");
+        }
+
+        studentRepository.findByNumber(student.getStudentNumber());
         Student updatedStudent = studentRepository.update(student);
-        AppUser appUser = appUserRepository.findByUsername(String.format("ST-%s", student.getStudentNumber()));
+        String password = passwordEncoder.encode(student.getFirstName().replace(" ", "") + student.getLastName().replace(" ", ""));
+        AppUser appUser = new AppUser(String.format("ST-%s", student.getStudentNumber()), password, "STUDENT");
         appUserRepository.update(appUser);
         return updatedStudent;
     };

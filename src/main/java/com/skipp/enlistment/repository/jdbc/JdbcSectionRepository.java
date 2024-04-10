@@ -58,16 +58,44 @@ public class JdbcSectionRepository implements SectionDao {
 
     @Override
     public Section create(Section section) {
-        return null;
+        String sql = "INSERT INTO sections (section_id, subject_id, schedule, room_name, faculty_number) " +
+                "VALUES (?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sql,
+                section.getSectionId(),
+                section.getSubject().getSubjectId(),
+                section.getSchedule().toString(),
+                section.getRoom().getName(),
+                section.getFaculty().getFacultyNumber());
+        return new Section(
+                section.getSectionId(),
+                section.getSubject(),
+                section.getSchedule(),
+                section.getRoom(),
+                section.getFaculty());
     }
 
     @Override
     public Section update(Section section) {
-        return null;
+        String sql = "UPDATE sections SET subject_id = ?, schedule = ?, room_name = ?, faculty_number = ? " +
+                "WHERE section_id = ?";
+        jdbcTemplate.update(sql,
+                section.getSubject().getSubjectId(),
+                section.getSchedule().toString(),
+                section.getRoom().getName(),
+                section.getFaculty().getFacultyNumber(),
+                section.getSectionId());
+        return new Section(
+                section.getSectionId(),
+                section.getSubject(),
+                section.getSchedule(),
+                section.getRoom(),
+                section.getFaculty());
     }
 
     @Override
     public void delete(String sectionId) {
+        String sql = "DELETE FROM sections WHERE section_id = ?";
+        jdbcTemplate.update(sql, sectionId);
 
     }
 }

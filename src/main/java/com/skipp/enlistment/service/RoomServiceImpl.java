@@ -31,12 +31,25 @@ public class RoomServiceImpl implements RoomService{
 
     @Override
     public Room create(Room room) {
+
+        if(room.getName().isBlank()){
+            throw new IllegalArgumentException("name should not be blank");
+        }
+
+        if (room.getCapacity() < 0){
+            throw new IllegalArgumentException("capacity must be non-negative, was " + room.getCapacity());
+        }
         Room newRoom = roomRepository.create(room);
         return newRoom;
     }
 
     @Override
     public Room update(Room room) {
+
+        if (room.getCapacity() < 0){
+            throw new IllegalArgumentException("capacity must be non-negative, was " + room.getCapacity());
+        }
+
         roomRepository.findByName(room.getName());
         Room updatedRoom = roomRepository.update(room);
         return updatedRoom;

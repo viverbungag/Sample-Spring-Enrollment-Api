@@ -5,7 +5,7 @@ package com.skipp.enlistment.domain;
  */
 public class SectionCreationException extends RuntimeException {
 
-    SectionCreationException(String message) {
+    public SectionCreationException(String message) {
         super(message);
     }
 

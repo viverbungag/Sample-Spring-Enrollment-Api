@@ -71,7 +71,7 @@ public class StudentController {
     // TODO This should only be accessed by faculty. Apply the appropriate annotation.
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Student createStudent(@RequestBody Student student, Authentication auth, UriComponentsBuilder uriBuilder) {
+    public Student createStudent(@RequestBody Student student, Authentication auth) {
         // TODO implement this handler
         Student newStudent;
         if (verification.isRoleNotFaculty(auth)) {
@@ -82,14 +82,6 @@ public class StudentController {
             newStudent = studentServiceImpl.create(student);
         } catch (DuplicateKeyException e) {
             throw new RecordAlreadyExistsException("Student with studentNumber " + student.getStudentNumber() + " already exists.");
-        }
-
-        if(student.getFirstName().isBlank()){
-            throw new IllegalArgumentException("firstName should not be blank");
-        }
-
-        if(student.getLastName().isBlank()){
-            throw new IllegalArgumentException("lastName should not be blank");
         }
 
         return newStudent;
@@ -110,14 +102,6 @@ public class StudentController {
             updatedStudent = studentServiceImpl.update(student);
         } catch (EmptyResultDataAccessException e) {
             throw new RecordNotFoundException(String.format("Student Number: %s not found", student.getStudentNumber()));
-        }
-
-        if(student.getFirstName().isBlank()){
-            throw new IllegalArgumentException("firstName should not be blank");
-        }
-
-        if(student.getLastName().isBlank()){
-            throw new IllegalArgumentException("lastName should not be blank");
         }
 
         return updatedStudent;
