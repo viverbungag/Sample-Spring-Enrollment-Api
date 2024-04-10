@@ -47,20 +47,14 @@ public class FacultyServiceImpl implements FacultyService{
 
     @Override
     public Faculty create(Faculty faculty) {
-        if (faculty.getFacultyNumber() < 0) {
-            throw new IllegalArgumentException("facultyNumber must be non-negative, was " + faculty.getFacultyNumber());
-        }
+        validateIfFacultyNumberIsNonNegative(faculty.getFacultyNumber());
 
-        if (faculty.getFirstName().isBlank()){
-            throw new IllegalArgumentException("firstName should not be blank");
-        }
-        if (faculty.getLastName().isBlank()){
-            throw new IllegalArgumentException("lastName should not be blank");
-        }
+        validateIfFirstNameIsNotBlank(faculty.getFirstName());
+        validateIfLastNameIsNotBlank(faculty.getLastName());
 
         Faculty newFaculty = facultyRepository.create(faculty);
-        String password = passwordEncoder.encode(faculty.getFirstName().replace(" ", "")+faculty.getLastName().replace(" ", ""));
-        AppUser appUser = new AppUser(String.format("FC-%s", faculty.getFacultyNumber()), password, "FACULTY");
+
+        AppUser appUser = constructAppUserBasedOnFaculty(newFaculty);
         appUserRepository.create(appUser);
         return newFaculty;
     }
@@ -68,25 +62,49 @@ public class FacultyServiceImpl implements FacultyService{
     @Override
     public Faculty update(Faculty faculty) {
 
-        if (faculty.getFacultyNumber() < 0) {
-            throw new IllegalArgumentException("facultyNumber must be non-negative, was " + faculty.getFacultyNumber());
-        }
+        validateIfFirstNameIsNotBlank(faculty.getFirstName());
+        validateIfLastNameIsNotBlank(faculty.getLastName());
 
-        if (faculty.getFirstName().isBlank()){
-            throw new IllegalArgumentException("firstName should not be blank");
-        }
-        if (faculty.getLastName().isBlank()){
-            throw new IllegalArgumentException("lastName should not be blank");
-        }
-
+        // Will check if faculty exists, else will throw an exception
         facultyRepository.findByNumber(faculty.getFacultyNumber());
+
+        AppUser appUser = constructAppUserBasedOnFaculty(faculty);
+
         Faculty updatedFaculty = facultyRepository.update(faculty);
+        appUserRepository.update(appUser);
         return updatedFaculty;
     }
 
     @Override
     public void delete(int facultyNumber) {
+
+        // Will check if faculty exists, else will throw an exception
         facultyRepository.findByNumber(facultyNumber);
+
         facultyRepository.delete(facultyNumber);
+    }
+
+    private void validateIfFacultyNumberIsNonNegative(int facultyNumber) {
+        if (facultyNumber < 0) {
+            throw new IllegalArgumentException("facultyNumber must be non-negative, was " + facultyNumber);
+        }
+    }
+
+    private void validateIfFirstNameIsNotBlank(String firstName) {
+        if (firstName.isBlank()) {
+            throw new IllegalArgumentException("firstName should not be blank");
+        }
+    }
+
+    private void validateIfLastNameIsNotBlank(String lastName) {
+        if (lastName.isBlank()) {
+            throw new IllegalArgumentException("lastName should not be blank");
+        }
+    }
+
+    private AppUser constructAppUserBasedOnFaculty(Faculty faculty) {
+        String password = passwordEncoder.encode(faculty.getFirstName().replace(" ", "")+faculty.getLastName().replace(" ", ""));
+        AppUser appUser = new AppUser(String.format("FC-%s", faculty.getFacultyNumber()), password, "FACULTY");
+        return appUser;
     }
 }

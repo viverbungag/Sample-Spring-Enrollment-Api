@@ -32,13 +32,9 @@ public class RoomServiceImpl implements RoomService{
     @Override
     public Room create(Room room) {
 
-        if(room.getName().isBlank()){
-            throw new IllegalArgumentException("name should not be blank");
-        }
+        validateIfRoomNameIsBlank(room.getName());
+        validateIfCapacityIsNegative(room.getCapacity());
 
-        if (room.getCapacity() < 0){
-            throw new IllegalArgumentException("capacity must be non-negative, was " + room.getCapacity());
-        }
         Room newRoom = roomRepository.create(room);
         return newRoom;
     }
@@ -46,18 +42,32 @@ public class RoomServiceImpl implements RoomService{
     @Override
     public Room update(Room room) {
 
-        if (room.getCapacity() < 0){
-            throw new IllegalArgumentException("capacity must be non-negative, was " + room.getCapacity());
-        }
+        validateIfCapacityIsNegative(room.getCapacity());
 
+        // Will check if room exists, else will throw an exception
         roomRepository.findByName(room.getName());
+
         Room updatedRoom = roomRepository.update(room);
         return updatedRoom;
     }
 
     @Override
     public void delete(String name) {
+        // Will check if room exists, else will throw an exception
         roomRepository.findByName(name);
+
         roomRepository.delete(name);
+    }
+
+    private void validateIfRoomNameIsBlank(String name) {
+        if (name.isBlank()) {
+            throw new IllegalArgumentException("name should not be blank");
+        }
+    }
+
+    private void validateIfCapacityIsNegative(int capacity) {
+        if (capacity < 0) {
+            throw new IllegalArgumentException("capacity should be non-negative");
+        }
     }
 }
