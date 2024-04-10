@@ -3,6 +3,7 @@ package com.skipp.enlistment.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.skipp.enlistment.domain.Faculty;
 import com.skipp.enlistment.domain.Section;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -12,9 +13,16 @@ import java.util.HashSet;
  */
 public final class FacultyDto {
 
+    @Schema(description = "Unique identifier for a faculty member")
     private Integer facultyNumber;
+
+    @Schema(description = "The first name of the faculty member")
     private String firstName;
+
+    @Schema(description = "The last name of the faculty member")
     private String lastName;
+
+    @Schema(description = "The sections that this faculty member will be teaching")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Collection<SectionDto> sections;
 

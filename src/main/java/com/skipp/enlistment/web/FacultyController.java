@@ -20,11 +20,11 @@ public class FacultyController {
 
     // TODO What bean should be wired here?
     private final FacultyService facultyServiceImpl;
-    private final Verification verification;
+    private final Validation validation;
 
-    public FacultyController(FacultyService facultyServiceImpl, Verification verification) {
+    public FacultyController(FacultyService facultyServiceImpl, Validation validation) {
         this.facultyServiceImpl = facultyServiceImpl;
-        this.verification = verification;
+        this.validation = validation;
     }
 
     // TODO What @XXXMapping annotation should be put here?
@@ -43,9 +43,8 @@ public class FacultyController {
     public FacultyDto getFaculty(@PathVariable Integer facultyNumber, Authentication auth) {
         // TODO implement this handler
         Faculty faculty;
-        if (verification.isRoleNotFaculty(auth)){
-            throw new AccessDeniedException("Access Denied");
-        }
+        validation.validateIfRoleIsNotFaculty(auth);
+
         try{
             faculty = facultyServiceImpl.findByNumber(facultyNumber, true);
         } catch (EmptyResultDataAccessException e) {
@@ -67,9 +66,7 @@ public class FacultyController {
         // TODO implement this handler
         Faculty newFaculty;
 
-        if (verification.isRoleNotFaculty(auth)){
-            throw new AccessDeniedException("Access Denied");
-        }
+        validation.validateIfRoleIsNotFaculty(auth);
 
         try{
             newFaculty = facultyServiceImpl.create(faculty);
@@ -87,9 +84,7 @@ public class FacultyController {
     public Faculty updateFaculty(@RequestBody Faculty faculty, Authentication auth) {
         // TODO implement this handler
         Faculty updatedFaculty;
-        if (verification.isRoleNotFaculty(auth)){
-            throw new AccessDeniedException("Access Denied");
-        }
+        validation.validateIfRoleIsNotFaculty(auth);
 
         try {
             updatedFaculty = facultyServiceImpl.update(faculty);
@@ -107,9 +102,7 @@ public class FacultyController {
     @ResponseStatus(HttpStatus.OK)
     public void deleteFaculty(@PathVariable Integer facultyNumber, Authentication auth) {
         // TODO implement this handler
-        if (verification.isRoleNotFaculty(auth)) {
-            throw new AccessDeniedException("Access Denied");
-        }
+        validation.validateIfRoleIsNotFaculty(auth);
 
         try {
             facultyServiceImpl.delete(facultyNumber);

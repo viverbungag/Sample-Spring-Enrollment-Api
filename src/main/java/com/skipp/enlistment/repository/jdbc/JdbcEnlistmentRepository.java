@@ -27,7 +27,9 @@ public class JdbcEnlistmentRepository implements EnlistmentDao {
 
     @Override
     public Enlistment create(Student student, Section section) {
-        return null;
+        String sql = "INSERT INTO enlistments (student_number, section_id) VALUES (?, ?)";
+        jdbcTemplate.update(sql, student.getStudentNumber(), section.getSectionId());
+        return new Enlistment(student.getStudentNumber(), section.getSectionId());
     }
 
     @Override

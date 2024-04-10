@@ -1,6 +1,7 @@
 package com.skipp.enlistment.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,21 +15,25 @@ public class Student {
     /**
      * Unique identifier for the student
      */
+    @Schema(description = "Unique identifier for the student")
     private final Integer studentNumber;
 
     /**
      * The first name of the student
      */
+    @Schema(description = "The first name of the student")
     private String firstName;
 
     /**
      * The last name of the student
      */
+    @Schema(description = "The last name of the student")
     private String lastName;
 
     /**
      * The sections where the student has enlisted in
      */
+    @Schema(description = "The sections where the student has enlisted in")
     private final Collection<Section> sections = new HashSet<>();
 
     @JsonCreator

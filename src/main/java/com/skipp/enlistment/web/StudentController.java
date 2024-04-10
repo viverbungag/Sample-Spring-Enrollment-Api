@@ -5,6 +5,7 @@ import com.skipp.enlistment.domain.*;
 import com.skipp.enlistment.dto.StudentDto;
 import com.skipp.enlistment.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -25,13 +26,13 @@ import java.util.Map;
 public class StudentController {
 
     private final StudentService studentServiceImpl;
-    private final Verification verification;
+    private final Validation validation;
 
     // TODO What bean should be wired here?
     @Autowired
-    public StudentController(StudentService studentServiceImpl, Verification verification) {
+    public StudentController(StudentService studentServiceImpl, Validation validation) {
         this.studentServiceImpl = studentServiceImpl;
-        this.verification = verification;
+        this.validation = validation;
     }
 
     // TODO What @XXXMapping annotation should be put here?
@@ -50,9 +51,7 @@ public class StudentController {
         // TODO implement this handler
         // Hint: 'auth' is where you can get the username of the user accessing the API
         Student student;
-        if (verification.isRoleNotFaculty(auth)) {
-            throw new AccessDeniedException("Access Denied");
-        }
+        validation.validateIfRoleIsNotFaculty(auth);
 
         try{
             student = studentServiceImpl.findByNumber(studentNumber, true);
@@ -74,9 +73,7 @@ public class StudentController {
     public Student createStudent(@RequestBody Student student, Authentication auth) {
         // TODO implement this handler
         Student newStudent;
-        if (verification.isRoleNotFaculty(auth)) {
-            throw new AccessDeniedException("Access Denied");
-        }
+        validation.validateIfRoleIsNotFaculty(auth);
 
         try{
             newStudent = studentServiceImpl.create(student);
@@ -94,9 +91,7 @@ public class StudentController {
     public Student updateStudent(@RequestBody Student student, Authentication auth) {
         // TODO implement this handler
         Student updatedStudent;
-        if (verification.isRoleNotFaculty(auth)) {
-            throw new AccessDeniedException("Access Denied");
-        }
+        validation.validateIfRoleIsNotFaculty(auth);
 
         try{
             updatedStudent = studentServiceImpl.update(student);
@@ -114,9 +109,7 @@ public class StudentController {
     @ResponseStatus(HttpStatus.OK)
     public void deleteStudent(@PathVariable Integer studentNumber, Authentication auth) {
         // TODO implement this handler
-        if (verification.isRoleNotFaculty(auth)) {
-            throw new AccessDeniedException("Access Denied");
-        }
+        validation.validateIfRoleIsNotFaculty(auth);
 
         try {
             studentServiceImpl.delete(studentNumber);

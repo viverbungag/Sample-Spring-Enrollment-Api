@@ -1,6 +1,7 @@
 package com.skipp.enlistment.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,21 +17,25 @@ public class Faculty {
     /**
      * Unique identifier for a faculty member
      */
+    @Schema(description = "Unique identifier for a faculty member")
     private final Integer facultyNumber;
 
     /**
      * The first name of the faculty member
      */
+    @Schema(description = "The first name of the faculty member")
     private String firstName;
 
     /**
      * The last name of the faculty member
      */
+    @Schema(description = "The last name of the faculty member")
     private String lastName;
 
     /**
      * The sections that this faculty member will be teaching
      */
+    @Schema(description = "The sections that this faculty member will be teaching")
     private final Collection<Section> sections = new HashSet<>();
 
     @JsonCreator

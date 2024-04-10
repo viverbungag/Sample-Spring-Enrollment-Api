@@ -1,5 +1,6 @@
 package com.skipp.enlistment.domain;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalTime;
@@ -20,16 +21,19 @@ public class Schedule {
     /**
      * Days when the class will be held
      */
+    @Schema(description = "Days when the class will be held")
     private final Days days;
 
     /**
      * Class starting time
      */
+    @Schema(description = "Class starting time")
     private final LocalTime start;
 
     /**
      * Class ending time
      */
+    @Schema(description = "Class ending time")
     private final LocalTime end;
 
     private Schedule() {
@@ -39,9 +43,9 @@ public class Schedule {
     }
 
     public Schedule(Days days, LocalTime start, LocalTime end) {
-        notNull(days);
-        notNull(start);
-        notNull(end);
+//        notNull(days);
+//        notNull(start);
+//        notNull(end);
         this.days = days;
         this.start = start;
         this.end = end;

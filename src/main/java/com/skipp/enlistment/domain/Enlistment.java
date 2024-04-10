@@ -1,5 +1,7 @@
 package com.skipp.enlistment.domain;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 /**
  * Represents a student's enlistment in a section.
  *

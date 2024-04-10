@@ -1,6 +1,7 @@
 package com.skipp.enlistment.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * Represents a room where a class will be held.
@@ -10,11 +11,13 @@ public class Room {
     /**
      * Unique identifier for the room
      */
+    @Schema(description = "Unique identifier for the room")
     private final String name;
 
     /**
      * Maximum capacity of the room
      */
+    @Schema(description = "Maximum capacity of the room")
     private final Integer capacity;
 
     public Room() {

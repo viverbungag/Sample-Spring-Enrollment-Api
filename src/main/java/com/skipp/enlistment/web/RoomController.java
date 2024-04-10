@@ -22,12 +22,12 @@ public class RoomController {
 
     // TODO What bean should be wired here?
     private final RoomService roomServiceImpl;
-    private final Verification verification;
+    private final Validation validation;
 
     @Autowired
-    public RoomController(RoomService roomServiceImpl, Verification verification) {
+    public RoomController(RoomService roomServiceImpl, Validation validation) {
         this.roomServiceImpl = roomServiceImpl;
-        this.verification = verification;
+        this.validation = validation;
     }
 
     // TODO What @XXXMapping annotation should be put here?
@@ -50,9 +50,7 @@ public class RoomController {
     public Room createRoom(@RequestBody Room room, Authentication auth) {
         // TODO implement this handler
         Room newRoom;
-        if (verification.isRoleNotFaculty(auth)){
-            throw new AccessDeniedException("Access Denied");
-        }
+        validation.validateIfRoleIsNotFaculty(auth);
 
         try{
             newRoom = roomServiceImpl.create(room);
@@ -70,9 +68,7 @@ public class RoomController {
     public Room updateRoom(@RequestBody Room room, Authentication auth) {
         // TODO implement this handler
         Room updatedRoom;
-        if (verification.isRoleNotFaculty(auth)){
-            throw new AccessDeniedException("Access Denied");
-        }
+        validation.validateIfRoleIsNotFaculty(auth);
 
         try{
             updatedRoom = roomServiceImpl.update(room);
@@ -90,9 +86,7 @@ public class RoomController {
     @ResponseStatus(HttpStatus.OK)
     public void deleteRoom(@PathVariable String roomName, Authentication auth) {
         // TODO implement this handler
-        if (verification.isRoleNotFaculty(auth)){
-            throw new AccessDeniedException("Access Denied");
-        }
+        validation.validateIfRoleIsNotFaculty(auth);
 
         try {
             roomServiceImpl.delete(roomName);

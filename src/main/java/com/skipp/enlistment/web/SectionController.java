@@ -27,13 +27,13 @@ public class SectionController {
     private final SubjectService subjectServiceImpl;
     private final RoomService roomServiceImpl;
     private final FacultyService facultyServiceImpl;
-    private final Verification verification;
+    private final Validation validation;
 
     // TODO What bean/s should be wired here?
     @Autowired
-    public SectionController(SectionService sectionServiceImpl, Verification verification, SubjectService subjectServiceImpl, RoomService roomServiceImpl, FacultyService facultyServiceImpl) {
+    public SectionController(SectionService sectionServiceImpl, Validation validation, SubjectService subjectServiceImpl, RoomService roomServiceImpl, FacultyService facultyServiceImpl) {
         this.sectionServiceImpl = sectionServiceImpl;
-        this.verification = verification;
+        this.validation = validation;
         this.subjectServiceImpl = subjectServiceImpl;
         this.roomServiceImpl = roomServiceImpl;
         this.facultyServiceImpl = facultyServiceImpl;
@@ -85,9 +85,7 @@ public class SectionController {
         Faculty faculty;
         Schedule schedule = Schedule.valueOf(section.getSchedule());
 
-        if (verification.isRoleNotFaculty(auth)) {
-            throw new AccessDeniedException("Access Denied");
-        }
+        validation.validateIfRoleIsNotFaculty(auth);
 
         try{
             subject = subjectServiceImpl.findSubject(section.getSubjectId());
@@ -116,11 +114,10 @@ public class SectionController {
         } catch (DuplicateKeyException | ScheduleConflictException e) {
 
             if (e instanceof ScheduleConflictException) {
-                System.out.println(e.getMessage());
                 throw new SectionCreationException(e.getMessage());
             }
 
-            throw new DuplicateKeyException("Section ID: " + section.getSectionId() + " already exists");
+            throw new RecordAlreadyExistsException("Section " + section.getSectionId() + " already exists.");
 
         }
 
@@ -140,9 +137,7 @@ public class SectionController {
         Faculty faculty;
         Schedule schedule = Schedule.valueOf(section.getSchedule());
 
-        if (verification.isRoleNotFaculty(auth)) {
-            throw new AccessDeniedException("Access Denied");
-        }
+        validation.validateIfRoleIsNotFaculty(auth);
 
         try{
             subject = subjectServiceImpl.findSubject(section.getSubjectId());
@@ -163,9 +158,8 @@ public class SectionController {
         }
 
         Section sectionConverted = new Section(section.getSectionId(), subject, schedule, room, faculty);
-        if (verification.isRoleNotFaculty(auth)) {
-            throw new AccessDeniedException("Access Denied");
-        }
+
+        validation.validateIfRoleIsNotFaculty(auth);
 
         try{
             updatedSection = sectionServiceImpl.update(sectionConverted);
@@ -184,9 +178,7 @@ public class SectionController {
     @ResponseStatus(HttpStatus.OK)
     public void deleteSection(@PathVariable String sectionId, Authentication auth) {
         // TODO implement this handler
-        if (verification.isRoleNotFaculty(auth)) {
-            throw new AccessDeniedException("Access Denied");
-        }
+        validation.validateIfRoleIsNotFaculty(auth);
 
         try{
             sectionServiceImpl.delete(sectionId);

@@ -1,5 +1,7 @@
 package com.skipp.enlistment.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 /**
  * Object to be returned by the API in case of an error.
  *

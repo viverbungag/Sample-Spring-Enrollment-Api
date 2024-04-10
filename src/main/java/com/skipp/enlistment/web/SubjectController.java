@@ -19,11 +19,11 @@ public class SubjectController {
 
     // TODO What bean should be wired here?
     private final SubjectService subjectServiceImpl;
-    private final Verification verification;
+    private final Validation validation;
 
-    public SubjectController(SubjectService subjectServiceImpl, Verification verification) {
+    public SubjectController(SubjectService subjectServiceImpl, Validation validation) {
         this.subjectServiceImpl = subjectServiceImpl;
-        this.verification = verification;
+        this.validation = validation;
     }
 
     // TODO What @XXXMapping annotation should be put here?
@@ -46,9 +46,7 @@ public class SubjectController {
     public Subject createSubject(@RequestBody Subject subject, Authentication auth) {
         // TODO implement this handler
         Subject newSubject;
-        if (verification.isRoleNotFaculty(auth)){
-            throw new AccessDeniedException("Access Denied");
-        }
+        validation.validateIfRoleIsNotFaculty(auth);
 
         try{
             newSubject = subjectServiceImpl.create(subject);
@@ -66,9 +64,7 @@ public class SubjectController {
     @ResponseStatus(HttpStatus.OK)
     public void deleteSubject(@PathVariable String subjectId, Authentication auth) {
         // TODO implement this handler
-        if (verification.isRoleNotFaculty(auth)){
-            throw new AccessDeniedException("Access Denied");
-        }
+        validation.validateIfRoleIsNotFaculty(auth);
 
         try {
             subjectServiceImpl.delete(subjectId);

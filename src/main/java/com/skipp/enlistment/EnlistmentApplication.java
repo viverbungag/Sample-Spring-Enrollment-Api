@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @SpringBootApplication
 // TODO What annotation enables transaction management?
 // TODO What annotation enables security annotations?
+@EnableTransactionManagement
+@EnableMethodSecurity
 public class EnlistmentApplication {
 
 	public static void main(String[] args) {

@@ -1,5 +1,7 @@
 package com.skipp.enlistment.domain;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -12,31 +14,37 @@ public class Section {
     /**
      * Unique identifier for the section
      */
+    @Schema(description = "Unique identifier for the section")
     private final String sectionId;
 
     /**
      * The subject to be taught in the class
      */
+    @Schema(description = "The subject to be taught in the class")
     private final Subject subject;
 
     /**
      * When this class will be held each week
      */
+    @Schema(description = "When this class will be held each week")
     private Schedule schedule;
 
     /**
      * Where this class will be held
      */
+    @Schema(description = "Where this class will be held")
     private Room room;
 
     /**
      * The faculty member who will teaching this class
      */
+    @Schema(description = "The faculty member who will teaching this class")
     private Faculty faculty;
 
     /**
      * The students enlisted in this class
      */
+    @Schema(description = "The students enlisted in this class")
     private final Collection<Student> students = new HashSet<>();
 
     public Section(String sectionId, Subject subject, Schedule schedule, Room room, Faculty faculty) {

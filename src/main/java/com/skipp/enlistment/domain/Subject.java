@@ -1,6 +1,7 @@
 package com.skipp.enlistment.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * Represents a subject to be taught in class
@@ -10,6 +11,7 @@ public class Subject {
     /**
      * Unique identifier of the subject
      */
+    @Schema(description = "Unique identifier of the subject")
     private final String subjectId;
 
     @JsonCreator
