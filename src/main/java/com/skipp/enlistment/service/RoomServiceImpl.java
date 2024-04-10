@@ -67,7 +67,7 @@ public class RoomServiceImpl implements RoomService{
 
     private void validateIfCapacityIsNegative(int capacity) {
         if (capacity < 0) {
-            throw new IllegalArgumentException("capacity should be non-negative");
+            throw new IllegalArgumentException("capacity must be non-negative, was " + capacity);
         }
     }
 }

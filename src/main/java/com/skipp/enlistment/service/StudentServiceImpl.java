@@ -53,47 +53,64 @@ public class StudentServiceImpl implements StudentService{
     public Student create(Student student) {
         Student newStudent = studentRepository.create(student);
 
-        if (student.getStudentNumber() < 0) {
-            throw new IllegalArgumentException("studentNumber must be non-negative, was " + student.getStudentNumber());
-        }
+        validateIfStudentNumberIsNonNegative(student.getStudentNumber());
+        validateIfFirstNameIsNotBlank(student.getFirstName());
+        validateIfLastNameIsNotBlank(student.getLastName());
 
-
-        if(student.getFirstName().isBlank()){
-            throw new IllegalArgumentException("firstName should not be blank");
-        }
-
-        if(student.getLastName().isBlank()){
-            throw new IllegalArgumentException("lastName should not be blank");
-        }
-
-        String password = passwordEncoder.encode(student.getFirstName().replace(" ", "") + student.getLastName().replace(" ", ""));
-        AppUser appUser = new AppUser(String.format("ST-%s", student.getStudentNumber()), password, "STUDENT");
+        AppUser appUser = constructAppUserBasedOnStudent(newStudent);
         appUserRepository.create(appUser);
+
         return newStudent;
     };
 
     @Transactional
     public Student update(Student student) {
+        validateIfFirstNameIsNotBlank(student.getFirstName());
+        validateIfLastNameIsNotBlank(student.getLastName());
 
-        if(student.getFirstName().isBlank()){
-            throw new IllegalArgumentException("firstName should not be blank");
-        }
-
-        if(student.getLastName().isBlank()){
-            throw new IllegalArgumentException("lastName should not be blank");
-        }
-
+        // Will check if student exists, else will throw an exception
         studentRepository.findByNumber(student.getStudentNumber());
+
         Student updatedStudent = studentRepository.update(student);
-        String password = passwordEncoder.encode(student.getFirstName().replace(" ", "") + student.getLastName().replace(" ", ""));
-        AppUser appUser = new AppUser(String.format("ST-%s", student.getStudentNumber()), password, "STUDENT");
+
+        AppUser appUser = constructAppUserBasedOnStudent(updatedStudent);
         appUserRepository.update(appUser);
+
         return updatedStudent;
     };
 
     @Transactional
     public void delete(int studentNumber) {
+
+        // Will check if student exists, else will throw an exception
         studentRepository.findByNumber(studentNumber);
+
         studentRepository.delete(studentNumber);
     };
+
+    private void validateIfStudentNumberIsNonNegative(int studentNumber) {
+        if (studentNumber < 0) {
+            throw new IllegalArgumentException("studentNumber must be non-negative, was " + studentNumber);
+        }
+    }
+
+    private void validateIfFirstNameIsNotBlank(String firstName) {
+        if (firstName.isBlank()) {
+            throw new IllegalArgumentException("firstName should not be blank");
+        }
+    }
+
+    private void validateIfLastNameIsNotBlank(String lastName) {
+        if (lastName.isBlank()) {
+            throw new IllegalArgumentException("lastName should not be blank");
+        }
+    }
+
+    private AppUser constructAppUserBasedOnStudent(Student student) {
+        String password = passwordEncoder.encode(student.getFirstName().replace(" ", "") + student.getLastName().replace(" ", ""));
+        AppUser appUser = new AppUser(String.format("ST-%s", student.getStudentNumber()), password, "STUDENT");
+        return appUser;
+    }
+
+
 }

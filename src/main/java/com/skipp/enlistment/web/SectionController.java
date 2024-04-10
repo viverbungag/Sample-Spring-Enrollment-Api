@@ -80,30 +80,13 @@ public class SectionController {
     public SectionDto createSection(@RequestBody SectionDto section, Authentication auth) {
         // TODO implement this handler
         Section newSection;
-        Subject subject;
-        Room room;
-        Faculty faculty;
+
+        Subject subject = getAndValidateIfSubjectIsExisting(section.getSubjectId());
+        Room room = getAndValidateIfRoomIsExisting(section.getRoomName());
+        Faculty faculty = getAndValidateIfFacultyIsExisting(section.getFacultyNumber());
         Schedule schedule = Schedule.valueOf(section.getSchedule());
 
         validation.validateIfRoleIsNotFaculty(auth);
-
-        try{
-            subject = subjectServiceImpl.findSubject(section.getSubjectId());
-        } catch (EmptyResultDataAccessException e) {
-            throw new ReferentialIntegrityViolationException("Subject ID: " + section.getSubjectId() + " not found");
-        }
-
-        try{
-            room = roomServiceImpl.findByName(section.getRoomName());
-        } catch (EmptyResultDataAccessException e) {
-            throw new ReferentialIntegrityViolationException("Room Name: " + section.getRoomName() + " not found");
-        }
-
-        try{
-            faculty = facultyServiceImpl.findByNumber(section.getFacultyNumber(), false);
-        } catch (EmptyResultDataAccessException e) {
-            throw new ReferentialIntegrityViolationException("Faculty Number: " + section.getFacultyNumber() + " not found");
-        }
 
         Section sectionConverted = new Section(section.getSectionId(), subject, schedule, room, faculty);
 
@@ -132,30 +115,12 @@ public class SectionController {
     public SectionDto updateSection(@RequestBody SectionDto section, Authentication auth) {
         // TODO implement this handler
         Section updatedSection;
-        Subject subject;
-        Room room;
-        Faculty faculty;
+        Subject subject = getAndValidateIfSubjectIsExisting(section.getSubjectId());
+        Room room = getAndValidateIfRoomIsExisting(section.getRoomName());
+        Faculty faculty = getAndValidateIfFacultyIsExisting(section.getFacultyNumber());
         Schedule schedule = Schedule.valueOf(section.getSchedule());
 
         validation.validateIfRoleIsNotFaculty(auth);
-
-        try{
-            subject = subjectServiceImpl.findSubject(section.getSubjectId());
-        } catch (EmptyResultDataAccessException e) {
-            throw new ReferentialIntegrityViolationException("Subject ID: " + section.getSubjectId() + " not found");
-        }
-
-        try{
-            room = roomServiceImpl.findByName(section.getRoomName());
-        } catch (EmptyResultDataAccessException e) {
-            throw new ReferentialIntegrityViolationException("Room Name: " + section.getRoomName() + " not found");
-        }
-
-        try{
-            faculty = facultyServiceImpl.findByNumber(section.getFacultyNumber(), false);
-        } catch (EmptyResultDataAccessException e) {
-            throw new ReferentialIntegrityViolationException("Faculty Number: " + section.getFacultyNumber() + " not found");
-        }
 
         Section sectionConverted = new Section(section.getSectionId(), subject, schedule, room, faculty);
 
@@ -190,6 +155,30 @@ public class SectionController {
             if (e instanceof DataIntegrityViolationException) {
                 throw new ReferentialIntegrityViolationException("Section ID: " + sectionId + " is being referenced by other entities");
             }
+        }
+    }
+
+    private Subject getAndValidateIfSubjectIsExisting(String subjectId) {
+        try{
+            return subjectServiceImpl.findSubject(subjectId);
+        } catch (EmptyResultDataAccessException e) {
+            throw new ReferentialIntegrityViolationException("Subject ID: " + subjectId + " not found");
+        }
+    }
+
+    private Room getAndValidateIfRoomIsExisting(String roomName) {
+        try{
+            return roomServiceImpl.findByName(roomName);
+        } catch (EmptyResultDataAccessException e) {
+            throw new ReferentialIntegrityViolationException("Room Name: " + roomName + " not found");
+        }
+    }
+
+    private Faculty getAndValidateIfFacultyIsExisting(int facultyNumber) {
+        try{
+            return facultyServiceImpl.findByNumber(facultyNumber, false);
+        } catch (EmptyResultDataAccessException e) {
+            throw new ReferentialIntegrityViolationException("Faculty Number: " + facultyNumber + " not found");
         }
     }
 

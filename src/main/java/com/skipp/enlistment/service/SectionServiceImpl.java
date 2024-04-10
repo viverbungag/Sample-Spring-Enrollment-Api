@@ -35,12 +35,8 @@ public class SectionServiceImpl implements SectionService{
 
     @Override
     public Section create(Section section) {
-        if (!section.getSectionId().matches("^[a-zA-Z0-9]*$")) {
-            throw new IllegalArgumentException("sectionId should be alphanumeric, was " + section.getSectionId());
-        }
-
+        validateIfSectionIdIsAlphanumeric(section.getSectionId());
         validateScheduleOverlaps(section);
-
 
         Section newSection = sectionRepository.create(section);
         return newSection;
@@ -49,15 +45,27 @@ public class SectionServiceImpl implements SectionService{
     @Override
     public Section update(Section section) {
         validateScheduleOverlaps(section);
+
+        // Will check if section exists, else will throw an exception
         sectionRepository.findById(section.getSectionId());
+
         Section updatedSection = sectionRepository.update(section);
         return updatedSection;
     }
 
     @Override
     public void delete(String sectionId) {
+
+        // Will check if section exists, else will throw an exception
         sectionRepository.findById(sectionId);
+
         sectionRepository.delete(sectionId);
+    }
+
+    private void validateIfSectionIdIsAlphanumeric(String sectionId) {
+        if (!sectionId.matches("^[a-zA-Z0-9]*$")) {
+            throw new IllegalArgumentException("sectionId should be alphanumeric, was " + sectionId);
+        }
     }
 
     private void validateScheduleOverlaps(Section section) {
