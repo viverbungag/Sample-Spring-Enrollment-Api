@@ -11,12 +11,11 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import javax.sql.DataSource;
 
 @Configuration
-@Profile("default")
 public class ApplicationConfig {
 
-        @Bean
-        @ConfigurationProperties("spring.datasource")
-        public DataSource dataSource(){
-            return DataSourceBuilder.create().build();
-        }
+    @Bean
+    @ConfigurationProperties("spring.datasource")
+    public DataSource dataSource(){
+        return DataSourceBuilder.create().build();
+    }
 }
