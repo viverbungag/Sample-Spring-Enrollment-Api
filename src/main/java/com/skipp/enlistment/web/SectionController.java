@@ -64,8 +64,6 @@ public class SectionController {
             throw new RecordNotFoundException(String.format("Section ID: %s not found", sectionId));
         }
 
-
-
         SectionDto sectionDto = new SectionDto(section, true);
         return sectionDto;
     }

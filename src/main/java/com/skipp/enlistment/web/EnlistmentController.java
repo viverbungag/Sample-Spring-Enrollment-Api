@@ -39,10 +39,8 @@ public class EnlistmentController {
         // Hint: 'auth' is where you can get the username of the user accessing the API
         Enlistment newEnlistment;
         validation.validateIfRoleIsNotStudent(auth);
-        String authId = auth.getName().split("-")[1];
-        if (!authId.equals(String.valueOf(enlistment.studentNumber()))) {
-            throw new AccessDeniedException("You cannot enlist for another student");
-        }
+
+        validateIfTheStudentAccessingTheInformationIsTheUserAuthorized(auth, enlistment.studentNumber());
 
         try {
             newEnlistment = enlistmentServiceImpl.enlist(enlistment.studentNumber(), enlistment.sectionId());
@@ -69,6 +67,13 @@ public class EnlistmentController {
             if (e instanceof RecordNotFoundException) {
                 throw new ReferentialIntegrityViolationException(e.getMessage());
             }
+        }
+    }
+
+    private void validateIfTheStudentAccessingTheInformationIsTheUserAuthorized(Authentication auth, Integer studentNumber) {
+        String authId = auth.getName().split("-")[1];
+        if (!authId.equals(String.valueOf(studentNumber))) {
+            throw new AccessDeniedException("You cannot enlist for another student");
         }
     }
 
