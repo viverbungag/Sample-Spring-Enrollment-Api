@@ -10,6 +10,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,12 +23,10 @@ public class RoomController {
 
     // TODO What bean should be wired here?
     private final RoomService roomServiceImpl;
-    private final Validation validation;
 
     @Autowired
-    public RoomController(RoomService roomServiceImpl, Validation validation) {
+    public RoomController(RoomService roomServiceImpl) {
         this.roomServiceImpl = roomServiceImpl;
-        this.validation = validation;
     }
 
     // TODO What @XXXMapping annotation should be put here?
@@ -47,10 +46,10 @@ public class RoomController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('FACULTY')")
     public Room createRoom(@RequestBody Room room, Authentication auth) {
         // TODO implement this handler
         Room newRoom;
-        validation.validateIfRoleIsNotFaculty(auth);
 
         try{
             newRoom = roomServiceImpl.create(room);
@@ -65,10 +64,10 @@ public class RoomController {
     // TODO This should only be accessed by faculty. Apply appropriate annotation.
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('FACULTY')")
     public Room updateRoom(@RequestBody Room room, Authentication auth) {
         // TODO implement this handler
         Room updatedRoom;
-        validation.validateIfRoleIsNotFaculty(auth);
 
         try{
             updatedRoom = roomServiceImpl.update(room);
@@ -84,9 +83,9 @@ public class RoomController {
     // TODO This should only be accessed by faculty. Apply appropriate annotation.
     @DeleteMapping("/{roomName}")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('FACULTY')")
     public void deleteRoom(@PathVariable String roomName, Authentication auth) {
         // TODO implement this handler
-        validation.validateIfRoleIsNotFaculty(auth);
 
         try {
             roomServiceImpl.delete(roomName);

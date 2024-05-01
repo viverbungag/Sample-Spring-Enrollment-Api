@@ -12,6 +12,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,13 +28,11 @@ public class SectionController {
     private final SubjectService subjectServiceImpl;
     private final RoomService roomServiceImpl;
     private final FacultyService facultyServiceImpl;
-    private final Validation validation;
 
     // TODO What bean/s should be wired here?
     @Autowired
-    public SectionController(SectionService sectionServiceImpl, Validation validation, SubjectService subjectServiceImpl, RoomService roomServiceImpl, FacultyService facultyServiceImpl) {
+    public SectionController(SectionService sectionServiceImpl, SubjectService subjectServiceImpl, RoomService roomServiceImpl, FacultyService facultyServiceImpl) {
         this.sectionServiceImpl = sectionServiceImpl;
-        this.validation = validation;
         this.subjectServiceImpl = subjectServiceImpl;
         this.roomServiceImpl = roomServiceImpl;
         this.facultyServiceImpl = facultyServiceImpl;
@@ -75,6 +74,7 @@ public class SectionController {
     // TODO This should only be accessed by faculty. Apply the appropriate annotation.
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('FACULTY')")
     public SectionDto createSection(@RequestBody SectionDto section, Authentication auth) {
         // TODO implement this handler
         Section newSection;
@@ -83,8 +83,6 @@ public class SectionController {
         Room room = getAndValidateIfRoomIsExisting(section.getRoomName());
         Faculty faculty = getAndValidateIfFacultyIsExisting(section.getFacultyNumber());
         Schedule schedule = Schedule.valueOf(section.getSchedule());
-
-        validation.validateIfRoleIsNotFaculty(auth);
 
         Section sectionConverted = new Section(section.getSectionId(), subject, schedule, room, faculty);
 
@@ -110,6 +108,7 @@ public class SectionController {
     // TODO This should only be accessed by faculty. Apply appropriate annotation.
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('FACULTY')")
     public SectionDto updateSection(@RequestBody SectionDto section, Authentication auth) {
         // TODO implement this handler
         Section updatedSection;
@@ -118,11 +117,7 @@ public class SectionController {
         Faculty faculty = getAndValidateIfFacultyIsExisting(section.getFacultyNumber());
         Schedule schedule = Schedule.valueOf(section.getSchedule());
 
-        validation.validateIfRoleIsNotFaculty(auth);
-
         Section sectionConverted = new Section(section.getSectionId(), subject, schedule, room, faculty);
-
-        validation.validateIfRoleIsNotFaculty(auth);
 
         try{
             updatedSection = sectionServiceImpl.update(sectionConverted);
@@ -139,9 +134,9 @@ public class SectionController {
     // TODO This should only be accessed by faculty. Apply appropriate annotation.
     @DeleteMapping("/{sectionId}")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('FACULTY')")
     public void deleteSection(@PathVariable String sectionId, Authentication auth) {
         // TODO implement this handler
-        validation.validateIfRoleIsNotFaculty(auth);
 
         try{
             sectionServiceImpl.delete(sectionId);

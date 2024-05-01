@@ -8,6 +8,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
@@ -17,13 +18,11 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 @RestController
 public class EnlistmentController {
 
-    private final Validation validation;
     private final EnlistmentService enlistmentServiceImpl;
 
     // TODO What bean should be wired here?
     @Autowired
-    public EnlistmentController(Validation validation, EnlistmentService enlistmentServiceImpl) {
-        this.validation = validation;
+    public EnlistmentController(EnlistmentService enlistmentServiceImpl) {
         this.enlistmentServiceImpl = enlistmentServiceImpl;
     }
 
@@ -34,13 +33,11 @@ public class EnlistmentController {
     // TODO This should only be accessed by students. Apply the appropriate annotation.
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('STUDENT') && this.isSameStudent(authentication, #enlistment)")
     public Enlistment enlist(@RequestBody Enlistment enlistment, Authentication auth) {
         // TODO implement this handler
         // Hint: 'auth' is where you can get the username of the user accessing the API
         Enlistment newEnlistment;
-        validation.validateIfRoleIsNotStudent(auth);
-
-        validateIfTheStudentAccessingTheInformationIsTheUserAuthorized(auth, enlistment.studentNumber());
 
         try {
             newEnlistment = enlistmentServiceImpl.enlist(enlistment.studentNumber(), enlistment.sectionId());
@@ -70,11 +67,13 @@ public class EnlistmentController {
         }
     }
 
-    private void validateIfTheStudentAccessingTheInformationIsTheUserAuthorized(Authentication auth, Integer studentNumber) {
+    public boolean isSameStudent(Authentication auth, Enlistment enlistment) {
         String authId = auth.getName().split("-")[1];
-        if (!authId.equals(String.valueOf(studentNumber))) {
+        if (!authId.equals(String.valueOf(enlistment.studentNumber()))) {
             throw new AccessDeniedException("You cannot enlist for another student");
         }
+
+        return true;
     }
 
 }

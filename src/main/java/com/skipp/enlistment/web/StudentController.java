@@ -12,6 +12,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -26,13 +27,11 @@ import java.util.Map;
 public class StudentController {
 
     private final StudentService studentServiceImpl;
-    private final Validation validation;
 
     // TODO What bean should be wired here?
     @Autowired
-    public StudentController(StudentService studentServiceImpl, Validation validation) {
+    public StudentController(StudentService studentServiceImpl) {
         this.studentServiceImpl = studentServiceImpl;
-        this.validation = validation;
     }
 
     // TODO What @XXXMapping annotation should be put here?
@@ -47,11 +46,11 @@ public class StudentController {
     // Hint: The method argument should give you an idea how it would look like.
     @GetMapping("/{studentNumber}")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('FACULTY')")
     public StudentDto getStudent(@PathVariable Integer studentNumber, Authentication auth) {
         // TODO implement this handler
         // Hint: 'auth' is where you can get the username of the user accessing the API
         Student student;
-        validation.validateIfRoleIsNotFaculty(auth);
 
         try{
             student = studentServiceImpl.findByNumber(studentNumber, true);
@@ -70,10 +69,10 @@ public class StudentController {
     // TODO This should only be accessed by faculty. Apply the appropriate annotation.
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('FACULTY')")
     public Student createStudent(@RequestBody Student student, Authentication auth) {
         // TODO implement this handler
         Student newStudent;
-        validation.validateIfRoleIsNotFaculty(auth);
 
         try{
             newStudent = studentServiceImpl.create(student);
@@ -88,10 +87,10 @@ public class StudentController {
     // TODO This should only be accessed by faculty. Apply appropriate annotation.
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('FACULTY')")
     public Student updateStudent(@RequestBody Student student, Authentication auth) {
         // TODO implement this handler
         Student updatedStudent;
-        validation.validateIfRoleIsNotFaculty(auth);
 
         try{
             updatedStudent = studentServiceImpl.update(student);
@@ -107,9 +106,9 @@ public class StudentController {
     // TODO This should only be accessed by faculty. Apply appropriate annotation.
     @DeleteMapping("/{studentNumber}")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('FACULTY')")
     public void deleteStudent(@PathVariable Integer studentNumber, Authentication auth) {
         // TODO implement this handler
-        validation.validateIfRoleIsNotFaculty(auth);
 
         try {
             studentServiceImpl.delete(studentNumber);
