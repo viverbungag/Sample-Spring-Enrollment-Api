@@ -5,6 +5,7 @@ import com.skipp.enlistment.dao.EnlistmentDao;
 import com.skipp.enlistment.dao.SectionDao;
 import com.skipp.enlistment.dao.StudentDao;
 import com.skipp.enlistment.domain.*;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -107,7 +108,8 @@ public class StudentServiceImpl implements StudentService{
     }
 
     private AppUser constructAppUserBasedOnStudent(Student student) {
-        String password = passwordEncoder.encode(student.getFirstName().replace(" ", "") + student.getLastName().replace(" ", ""));
+        String rawPassword = StringUtils.replaceChars(student.getFirstName() + student.getLastName(), " ", "");
+        String password = passwordEncoder.encode(rawPassword);
         AppUser appUser = new AppUser(String.format("ST-%s", student.getStudentNumber()), password, "STUDENT");
         return appUser;
     }

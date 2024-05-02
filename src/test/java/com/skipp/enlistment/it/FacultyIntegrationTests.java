@@ -112,12 +112,12 @@ public class FacultyIntegrationTests {
         assertThat(_faculty.getLastName()).isEqualTo(LAST_NAME);
 
         final String USERNAME = "FC-" + FACULTY_NUMBER;
-//        String rawPassword = StringUtils.replaceChars(student.getFirstName() + student.getLastName(), " ", "");
-//        final String PASSWORD = passwordEncoder.encode(passwordEncoder.encode(rawPassword));
+        String rawPassword = StringUtils.replaceChars(faculty.getFirstName() + faculty.getLastName(), " ", "");
         final String ROLE = "FACULTY";
         AppUser user = userDao.findByUsername(USERNAME);
         assertThat(user.getUsername()).isEqualTo(USERNAME);
-//        assertThat(user.getPasswordHash()).isEqualTo(PASSWORD);
+        System.out.println();
+        assertThat(passwordEncoder.matches(rawPassword, user.getPasswordHash())).isTrue();
         assertThat(user.getRole()).isEqualTo(ROLE);
     }
 
@@ -216,12 +216,11 @@ public class FacultyIntegrationTests {
         assertThat(_student.getLastName()).isEqualTo(LAST_NAME);
 
         final String USERNAME = "FC-" + FACULTY_NUMBER;
-//        String rawPassword = StringUtils.replaceChars(student.getFirstName() + student.getLastName(), " ", "");
-//        final String PASSWORD = passwordEncoder.encode(passwordEncoder.encode(rawPassword));
+        String rawPassword = StringUtils.replaceChars(student.getFirstName() + student.getLastName(), " ", "");
         final String ROLE = "FACULTY";
         AppUser user = userDao.findByUsername(USERNAME);
         assertThat(user.getUsername()).isEqualTo(USERNAME);
-//        assertThat(user.getPasswordHash()).isEqualTo(PASSWORD);
+        assertThat(passwordEncoder.matches(rawPassword, user.getPasswordHash())).isTrue();
         assertThat(user.getRole()).isEqualTo(ROLE);
     }
 

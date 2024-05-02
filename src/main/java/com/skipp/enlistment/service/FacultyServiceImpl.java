@@ -6,6 +6,7 @@ import com.skipp.enlistment.dao.SectionDao;
 import com.skipp.enlistment.domain.AppUser;
 import com.skipp.enlistment.domain.Faculty;
 import com.skipp.enlistment.domain.Section;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -103,7 +104,8 @@ public class FacultyServiceImpl implements FacultyService{
     }
 
     private AppUser constructAppUserBasedOnFaculty(Faculty faculty) {
-        String password = passwordEncoder.encode(faculty.getFirstName().replace(" ", "")+faculty.getLastName().replace(" ", ""));
+        String rawPassword = StringUtils.replaceChars(faculty.getFirstName() + faculty.getLastName(), " ", "");
+        String password = passwordEncoder.encode(rawPassword);
         AppUser appUser = new AppUser(String.format("FC-%s", faculty.getFacultyNumber()), password, "FACULTY");
         return appUser;
     }

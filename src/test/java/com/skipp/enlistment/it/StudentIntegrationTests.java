@@ -6,6 +6,7 @@ import com.skipp.enlistment.domain.Student;
 import com.skipp.enlistment.dto.ErrorResponse;
 import com.skipp.enlistment.dto.SectionDto;
 import com.skipp.enlistment.dto.StudentDto;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -124,12 +125,11 @@ public class StudentIntegrationTests {
         assertThat(_student.getLastName()).isEqualTo(LAST_NAME);
 
         final String USERNAME = "ST-" + STUDENT_NUMBER;
-//        String rawPassword = StringUtils.replaceChars(student.getFirstName() + student.getLastName(), " ", "");
-//        final String PASSWORD = passwordEncoder.encode(passwordEncoder.encode(rawPassword));
+        String rawPassword = StringUtils.replaceChars(student.getFirstName() + student.getLastName(), " ", "");
         final String ROLE = "STUDENT";
         AppUser user = userDao.findByUsername(USERNAME);
         assertThat(user.getUsername()).isEqualTo(USERNAME);
-//        assertThat(user.getPasswordHash()).isEqualTo(PASSWORD);
+        assertThat(passwordEncoder.matches(rawPassword, user.getPasswordHash())).isTrue();
         assertThat(user.getRole()).isEqualTo(ROLE);
     }
 
@@ -214,12 +214,11 @@ public class StudentIntegrationTests {
         assertThat(_student.getLastName()).isEqualTo(LAST_NAME);
 
         final String USERNAME = "ST-" + STUDENT_NUMBER;
-//        String rawPassword = StringUtils.replaceChars(student.getFirstName() + student.getLastName(), " ", "");
-//        final String PASSWORD = passwordEncoder.encode(passwordEncoder.encode(rawPassword));
+        String rawPassword = StringUtils.replaceChars(student.getFirstName() + student.getLastName(), " ", "");
         final String ROLE = "STUDENT";
         AppUser user = userDao.findByUsername(USERNAME);
         assertThat(user.getUsername()).isEqualTo(USERNAME);
-//        assertThat(user.getPasswordHash()).isEqualTo(PASSWORD);
+        assertThat(passwordEncoder.matches(rawPassword, user.getPasswordHash())).isTrue();
         assertThat(user.getRole()).isEqualTo(ROLE);
     }
 
